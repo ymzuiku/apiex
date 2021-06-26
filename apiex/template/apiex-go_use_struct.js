@@ -1,19 +1,24 @@
+// user struct fn
+
 const buildCombine = ({ types, interfaces, handles, schema }) => `
 package apiex
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"errors"
+
+	"github.com/gofiber/fiber/v2"
+)
 ${types}
 ${interfaces}
 
 var Fiber = fiber.New()
 
-func SchemaInit() {
+func HandlesInit() {
 	Fiber.Get("/apiex", func(c *fiber.Ctx) error {
 		return c.SendString(schemaText)
 	})
+  ${handles}
 }
-
-${handles}
 
 const schemaText = \`${schema}\``;
 
@@ -36,12 +41,21 @@ type ${name} struct {
 const buildInterface = ({ upperName, fields }) => {
   const items = fields.map((item) => {
     if (item.input) {
-      return `${item.upperName}(input *${item.input}) (${item.type.name}, error)`;
+      return `${item.upperName} func(input *${item.input}) (${item.type.name}, error)`;
     }
-    return `${item.upperName}() (${item.type.name}, error)`;
+    return `${item.upperName} func() (${item.type.name}, error)`;
   });
 
-  const itemsInterface = fields.map((item) => {
+  return `
+type _${upperName}Methods struct {
+  ${items.join("\n  ")}
+}
+
+var ${upperName} = _${upperName}Methods{}`;
+};
+
+const buildHandle = ({ fields }) => {
+  const items = fields.map((item) => {
     if (item.input) {
       return `
   Fiber.${item.opts.method1}("${item.opts.url}", func(c *fiber.Ctx) error {
@@ -50,7 +64,10 @@ const buildInterface = ({ upperName, fields }) => {
     if err != nil {
       return err
     }
-    out, err := handles.${item.upperName}(&body)
+    if ${item.upperParent}.${item.upperName} == nil {
+      return errors.New("Need define ${item.upperParent}.${item.upperName}")
+    }
+    out, err := ${item.upperParent}.${item.upperName}(&body)
 
     if err != nil {
       return err
@@ -61,7 +78,10 @@ const buildInterface = ({ upperName, fields }) => {
     } else {
       return `
   Fiber.${item.opts.method1}("${item.opts.url}", func(c *fiber.Ctx) error {
-    out, err := handles.${item.upperName}()
+    if ${item.upperParent}.${item.upperName} == nil {
+      return errors.New("Need define ${item.upperParent}.${item.upperName}")
+    }
+    out, err := ${item.upperParent}.${item.upperName}()
 
     if err != nil {
       return err
@@ -71,24 +91,13 @@ const buildInterface = ({ upperName, fields }) => {
   })`;
     }
   });
-
-  return `  
-type ${upperName} interface {
-  ${items.join("\n  ")}
-}
-
-func ${upperName}Init(handles ${upperName}) {
-	Fiber.Get("/apiex", func(c *fiber.Ctx) error {
-		return c.SendString(schemaText)
-	})
-  ${itemsInterface.join("\n  ")}
-}
-`;
+  return items.join("\n  ");
 };
 
 module.exports = {
   type: "go",
   buildType,
   buildInterface,
+  buildHandle,
   buildCombine,
 };

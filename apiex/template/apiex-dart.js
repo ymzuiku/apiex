@@ -151,22 +151,18 @@ class ${upperName} {
   `;
 };
 
-const buildInterface = ({ upperName, name, fields, capUpperCase }) => {
+const buildInterface = ({ upperName, name, fields }) => {
   const items = fields.map((item) => {
     if (item.input) {
       return `
 static Future<${item.type.name}> ${item.name}(${item.input} input) async {
-  var res = await fetch${capUpperCase(item.opts.method)}("${
-        item.opts.url
-      }", input.toMap());
+  var res = await fetch${item.opts.method1}("${item.opts.url}", input.toMap());
   return ${item.type.name}.fromMap(res!);
 }`;
     } else {
       return `
 static Future<${item.type.name}> ${item.name}() async {
-  var res = await fetch${capUpperCase(item.opts.method)}("${
-        item.opts.url
-      }", null);
+  var res = await fetch${item.opts.method1}("${item.opts.url}", null);
   return ${item.type.name}.fromMap(res!);
 }`;
     }
