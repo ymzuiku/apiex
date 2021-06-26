@@ -26,7 +26,7 @@ type Fish {
   hello: Bool!
 }
 
-interface Login {
+interface LoginHandle {
   "POST /v1/user/getDog"
   getDog: Dog
   "GET /v1/user/getCat"

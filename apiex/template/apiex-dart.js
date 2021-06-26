@@ -1,4 +1,4 @@
-const buildCombine = ({ structs, handles }) => `
+const buildCombine = ({ types, interfaces }) => `
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -108,11 +108,11 @@ Future<Map<String, dynamic>?> fetchDelete(
     }
   }
 }
-${structs}
-${handles}
+${types}
+${interfaces}
 `;
 
-const buildStruct = ({ upperName, name, fields }) => {
+const buildType = ({ upperName, name, fields }) => {
   const items = fields.map((item) => {
     return `${item.type} ${item.name};`;
   });
@@ -151,7 +151,7 @@ class ${upperName} {
   `;
 };
 
-const buildHandle = ({ upperName, name, fields, capUpperCase }) => {
+const buildInterface = ({ upperName, name, fields, capUpperCase }) => {
   const items = fields.map((item) => {
     if (item.input) {
       return `
@@ -180,57 +180,9 @@ class ${upperName} {
 `;
 };
 
-const matchTypes = {
-  other: (array, non, val) => {
-    if (array && non) {
-      return `List<${val}>?`;
-    }
-    if (array) {
-      return `List<${val}>?`;
-    }
-    return val;
-  },
-  Int: (array, non) => {
-    if (array && non) {
-      return "List<int>?";
-    }
-    if (array) {
-      return "List<int>?";
-    }
-    return "int?";
-  },
-  Float: (array, non) => {
-    if (array && non) {
-      return "List<Float>?";
-    }
-    if (array) {
-      return "List<Float>?";
-    }
-    return "Float?";
-  },
-  String: (array, non) => {
-    if (array && non) {
-      return "List<String>?";
-    }
-    if (array) {
-      return "List<String>?";
-    }
-    return "List<String>?";
-  },
-  Bool: (array, non) => {
-    if (array && non) {
-      return "List<bool>?";
-    }
-    if (array) {
-      return "List<bool>?";
-    }
-    return "bool?";
-  },
-};
-
 module.exports = {
-  matchTypes,
-  buildStruct,
-  buildHandle,
+  type: "dart",
+  buildType,
+  buildInterface,
   buildCombine,
 };
