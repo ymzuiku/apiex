@@ -1,0 +1,5 @@
+graphql:
+  - apiex-schema.gql
+ts:
+  builder: apiex-ts.js
+  out: apiex_generate/temp.ts

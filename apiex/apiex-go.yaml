@@ -1,0 +1,5 @@
+graphql:
+  - apiex-schema.gql
+go:
+  builder: apiex-go.js
+  out: apiex_generate/temp.go

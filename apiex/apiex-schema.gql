@@ -1,0 +1,36 @@
+type User {
+  name: String
+  "validate:'required,min=6,max=8'"
+  age: Int!
+}
+
+type Dog {
+  vip: String!
+  "validate:'required,min=3,max=32'"
+  num: Int!
+  hello: Bool!
+  friendsA: [User!]!
+  friendsB: [Bool!]!
+  friendsC: Bool
+}
+
+type Cat {
+  vip: String!
+  num: Int!
+  hello: Bool!
+}
+
+type Fish {
+  vip: String!
+  num: Int!
+  hello: Bool!
+}
+
+interface Login {
+  "POST /v1/user/getDog"
+  getDog: Dog
+  "GET /v1/user/getCat"
+  getCat(input: User!): Cat
+  "PUT /v1/user/getFish"
+  getFish(input: User): Fish
+}

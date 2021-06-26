@@ -1,0 +1,5 @@
+graphql:
+  - apiex-schema.gql
+go:
+  builder: apiex-dart.js
+  out: apiex_generate/temp.dart
