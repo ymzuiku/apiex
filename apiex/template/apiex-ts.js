@@ -24,7 +24,7 @@ export interface ${name} {
 const buildInterface = ({ name, fields }) => {
   const items = fields.map((item) => {
     return `
-  ${item.name}: (input: ${item.input}):Promise<${item.type.name}> =>{
+  ${item.name}: (input: ${item.input}):Promise<${item.type}> =>{
     return fetch("${item.opts.url}", {
       method: "${item.opts.method}",
       headers: headers(),

@@ -33,9 +33,9 @@ type ${name} struct {
 const buildInterface = ({ upperName, fields }) => {
   const items = fields.map((item) => {
     if (item.input) {
-      return `${item.upperName}(input *${item.input}) (${item.type.name}, error)`;
+      return `${item.upperName}(input *${item.input}) (${item.type}, error)`;
     }
-    return `${item.upperName}() (${item.type.name}, error)`;
+    return `${item.upperName}() (${item.type}, error)`;
   });
 
   const itemsInterface = fields.map((item) => {

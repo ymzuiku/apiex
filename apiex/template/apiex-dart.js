@@ -155,24 +155,23 @@ const buildInterface = ({ upperName, name, fields }) => {
   const items = fields.map((item) => {
     if (item.input) {
       return `
-  static Future<${item.type.name}?> ${item.name}(${item.input} input) async {
+  static Future<${item.type}?> ${item.name}(${item.input} input) async {
     var res = await fetch${item.opts.method1}("${item.opts.url}", input.toMap());
     if (res != null) {
-      return ${item.type.name}.fromMap(res);
+      return ${item.type}.fromMap(res);
     }
     return null;
   }`;
     } else {
       return `
-  static Future<${item.type.name}?> ${item.name}() async {
+  static Future<${item.type}?> ${item.name}() async {
     var res = await fetch${item.opts.method1}("${item.opts.url}", null);
     if (res != null) {
-      return ${item.type.name}.fromMap(res);
+      return ${item.type}.fromMap(res);
     }
     return null;
   }`;
     }
-    const input = item.input ? `${item.input} input` : "";
   });
 
   return `

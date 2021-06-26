@@ -1,6 +1,6 @@
 {
   "name": "apiex",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "devDependencies": {
     "@types/fs-extra": "^9.0.11"
   },
