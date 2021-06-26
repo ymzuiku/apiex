@@ -1,5 +1,5 @@
 graphql:
   - apiex-schema.gql
-go:
+dart:
   builder: apiex-dart.js
   out: apiex_generate/apiex.dart

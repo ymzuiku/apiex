@@ -1,9 +1,7 @@
-const buildCombine = ({ types, interfaces, handles, schema }) => `
+const buildCombine = ({ types, interfaces, schema }) => `
 package apiex
 
 import "github.com/gofiber/fiber/v2"
-${types}
-${interfaces}
 
 var Fiber = fiber.New()
 
@@ -12,9 +10,8 @@ func SchemaInit() {
 		return c.SendString(schemaText)
 	})
 }
-
-${handles}
-
+${types}
+${interfaces}
 const schemaText = \`${schema}\``;
 
 const buildType = ({ name, fields }) => {
