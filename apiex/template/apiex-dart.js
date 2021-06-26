@@ -22,7 +22,7 @@ String? authorization;
 Future<void> initAuthorization() async {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   SharedPreferences prefs = await _prefs;
-  authorization = prefs.getString("Authorization");
+  authorization = prefs.getString("Authorization") ?? "";
 }
 
 Future<Options> getOptions() async {
@@ -117,12 +117,12 @@ const buildType = ({ upperName, name, fields }) => {
     return `${item.type} ${item.name};`;
   });
   const itemsInit = fields.map((item) => {
-    return `this.${item.name},`;
+    return `${item.notNull ? "required " : ""}this.${item.name},`;
   });
   const itemsToMap = fields.map((item) => {
     return `'${item.name}': ${item.name},`;
   });
-  const itemsToJson = fields.map((item) => {
+  const itemsFromMap = fields.map((item) => {
     return `${item.name}: map['${item.name}'],`;
   });
   return `
@@ -138,9 +138,9 @@ class ${upperName} {
     };
   }
 
-  factory ${upperName} .fromMap(Map<String, dynamic> map) {
+  factory ${upperName}.fromMap(Map<String, dynamic> map) {
     return ${upperName} (
-      ${itemsToJson.join("\n      ")}
+      ${itemsFromMap.join("\n      ")}
     );
   }
 
@@ -155,16 +155,22 @@ const buildInterface = ({ upperName, name, fields }) => {
   const items = fields.map((item) => {
     if (item.input) {
       return `
-static Future<${item.type.name}> ${item.name}(${item.input} input) async {
-  var res = await fetch${item.opts.method1}("${item.opts.url}", input.toMap());
-  return ${item.type.name}.fromMap(res!);
-}`;
+  static Future<${item.type.name}?> ${item.name}(${item.input} input) async {
+    var res = await fetch${item.opts.method1}("${item.opts.url}", input.toMap());
+    if (res != null) {
+      return ${item.type.name}.fromMap(res);
+    }
+    return null;
+  }`;
     } else {
       return `
-static Future<${item.type.name}> ${item.name}() async {
-  var res = await fetch${item.opts.method1}("${item.opts.url}", null);
-  return ${item.type.name}.fromMap(res!);
-}`;
+  static Future<${item.type.name}?> ${item.name}() async {
+    var res = await fetch${item.opts.method1}("${item.opts.url}", null);
+    if (res != null) {
+      return ${item.type.name}.fromMap(res);
+    }
+    return null;
+  }`;
     }
     const input = item.input ? `${item.input} input` : "";
   });
